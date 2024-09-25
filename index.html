@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapy App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question, .response {
+            margin-bottom: 20px;
+        }
+        .response input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .response button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question" id="question"></div>
+        <div class="response">
+            <input type="text" id="response" placeholder="Type your response here...">
+            <button onclick="submitResponse()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        async function fetchQuestion() {
+            const response = await fetch('/ask');
+            const data = await response.json();
+            document.getElementById('question').innerText = data.question || data.message;
+        }
+
+        async function submitResponse() {
+            const responseText = document.getElementById('response').value;
+            const response = await fetch('/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ response: responseText })
+            });
+            const data = await response.json();
+            alert(data.message);
+            document.getElementById('response').value = '';
+            fetchQuestion();
+        }
+
+        // Fetch the first question on page load
+        fetchQuestion();
+    </script>
+</body>
+</html>
